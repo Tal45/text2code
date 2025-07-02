@@ -1,48 +1,44 @@
 # 🤖 Text2Code Bot
 
-[Text2Code Bot](https://t.me/text2code_bot) is a Telegram bot that turns any input string into either a **QR Code** or **Barcode**, and sends it back instantly.  
-No storage, no tracking — just fast image generation via inline buttons.
+[Text2Code Bot](https://t.me/text2code_bot) is a Telegram bot that turns any input string into a **QR Code** or **Barcode**, and sends it back instantly — no storage, no polling, just lightweight webhook-powered magic.
 
 ---
 
 ## 🚀 Features
 
-- Inline buttons for QR / Barcode choice
-- Converts any string into image via BytesIO
-- Sends generated image back to user
-- Serverless & webhook-powered (Netlify)
-- 100% open source and self-hostable
+- Inline buttons for QR / Barcode selection
+- Converts text into an image using BytesIO
+- Hosted serverlessly with **Render** + **FastAPI**
+- No user data is saved
+- 100% open-source and free to use
 
 ---
 
-## 📦 Project Structure
+## 🧱 Project Structure
 
 ```
-text2code/
-├── netlify.toml                  # Netlify config
-├── set_webhook.py               # Script to register webhook with Telegram
-├── requirements.txt             # Python dependencies
-├── .env                         # Contains TELEGRAM_TOKEN and PUBLIC_URL
-├── README.md
-└── netlify/
-    └── functions/
-        └── bot.py               # Webhook handler for Telegram
+.
+├── main.py               # FastAPI app + Telegram logic
+├── requirements.txt      # Minimal dependency list
+├── set_webhook.py        # Register your webhook with Telegram
+├── .env                  # Bot token and public URL
+└── render.yaml           # Deployment config for Render
 ```
 
 ---
 
-## 🛠 Local Setup (Dev Mode)
+## 🛠 Local Setup
 
-1. **Clone the repo:**
+1. **Clone the repo**:
    ```bash
    git clone https://github.com/tal45/text2code.git
    cd text2code
    ```
 
-2. **Create `.env` file**:
-   ```env
-   TELEGRAM_TOKEN=your-telegram-bot-token
-   PUBLIC_URL=https://your-site.netlify.app/webhook
+2. **Create a virtual environment**:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # or .venv\Scripts\activate on Windows
    ```
 
 3. **Install dependencies**:
@@ -50,50 +46,48 @@ text2code/
    pip install -r requirements.txt
    ```
 
----
-
-## ☁️ Deploy on Netlify (Free Forever)
-
-1. Push your code to GitHub
-2. Go to [Netlify](https://netlify.com) → "Add new site from Git"
-3. Pick your repo
-4. Set these settings in Netlify:
-   - Build command: `pip install -r requirements.txt`
-   - Publish directory: (leave empty)
-   - Environment variables:
-     - `TELEGRAM_TOKEN`: your bot token
-     - `PUBLIC_URL`: your netlify url
-
-5. Add this `netlify.toml` in the root:
-
-```toml
-[functions]
-  node_bundler = "esbuild"
-
-[[redirects]]
-  from = "/webhook"
-  to = "/.netlify/functions/bot"
-  status = 200
-```
-
-6. After deploy, run:
-   ```bash
-   python set_webhook.py
+4. **Create a `.env` file**:
+   ```env
+   TELEGRAM_TOKEN=your-telegram-bot-token
+   PUBLIC_URL=https://your-app.onrender.com
    ```
 
-✅ This registers your bot’s webhook with Telegram.  
-From now on, Telegram will send new messages directly to your Netlify function.
+---
+
+## ☁️ Deployment on Render
+
+1. Push to GitHub
+2. Create a **new Render Web Service**
+3. Set:
+   - **Build command**: `pip install -r requirements.txt`
+   - **Start command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
+   - **Environment variable**: `TELEGRAM_TOKEN=your-bot-token`
+4. Deploy!
 
 ---
 
-## 🧪 Testing
+## 🔗 Register Your Webhook
 
-- Send `/start` to [@text2code_bot](https://t.me/text2code_bot)
-- Use the buttons to generate QR or Barcode
-- The image is sent instantly — no data is stored
+Once deployed, tell Telegram where to send updates:
+
+```bash
+python set_webhook.py
+```
+
+> Make sure your `.env` contains `PUBLIC_URL=https://your-app.onrender.com`
+
+---
+
+## ✅ Example Flow
+
+1. User sends `/start`
+2. Bot shows buttons: `QR` / `Barcode`
+3. User selects a mode and sends text
+4. Bot sends back a generated image
+5. 🎉 Done!
 
 ---
 
 ## 📜 License
 
-MIT — use freely, fork it, improve it.
+MIT — use freely, improve it, ship it.
